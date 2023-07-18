@@ -1,13 +1,11 @@
-% 时间优化： ischange_U_W，isSameUw_full，isSameUall_full
-function [U_W_t,U_union_t,ischange_U_W,estimators,count]=paper_subroutine_sw_MDTupdateU(Mx,U_W_t,U_union_t,i,I,ischange_U_W,estimators,yita)
+%----- subroutine_sw_STupdateU: take self-embedding transform for full sampling slices (Section 4.3.1), update subspace U_W_t
+function [U_W_t,U_union_t,ischange_U_W,estimators,count] = subroutine_sw_STupdateU(Mx,U_W_t,U_union_t,i,I,ischange_U_W,estimators,yita)
     count=0;
     isSameUw_full=0;
     isSameUall_full=0;
     for j=1:size(Mx,1)-I+1
         MXj=Mx(j:j+I-1,:,:);
-%         MXj_t=[];
-%         MXj_t(:,1,:)=MXj;
-        %更新U_W
+        % update U_W
         if size(U_W_t,2)==0
             estimator=1;
         else
@@ -34,8 +32,7 @@ function [U_W_t,U_union_t,ischange_U_W,estimators,count]=paper_subroutine_sw_MDT
             estimators(1,i)=estimator;
             count=count+1;
         else
-            isSameUw_full=1;%优化时间
-%             isSameUw_full=0;%不优化时间
+            isSameUw_full=1;
         end
 
         if ~isSameUall_full
@@ -57,8 +54,7 @@ function [U_W_t,U_union_t,ischange_U_W,estimators,count]=paper_subroutine_sw_MDT
             U_union_t(:,n,:)=tempU;
             isSameUall_full=0;
         else
-            isSameUall_full=1;%优化时间
-%             isSameUall_full=0;%不优化时间
+            isSameUall_full=1;
         end
     end
 end

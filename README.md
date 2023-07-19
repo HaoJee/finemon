@@ -5,7 +5,7 @@ This is a description of our monitoring scheme-FineMon. The code of FineMon is t
 
 The coding process is shown below figure:
 
-![finemon_process](E:\workplace\matlab\multi-metric\current\FineMon\finemon_process.png)
+![finemon_process](finemon_process.png)
 
 We introduce each code files as follows:
 

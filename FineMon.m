@@ -5,10 +5,12 @@ I=size(M,1);
 J=size(M,2);
 K=size(M,3);
 % window size after ST,  W_size = WT-T+1
+
 W_size = 701;
 % \eta in residual(.)
 % theta=2.5e-3;%MMS
 % yita=4e-29;
+
 % theta=2.4e-4;%SR
 % yita=6e-28;
 % theta=9e-4;%AQI
@@ -32,8 +34,6 @@ end
 % inverse normalization
 % N_max_min=MMS2_max_min;
 % N_min=MMS2_min;
-N_max_min=MMS2_max_min;
-N_min=MMS2_min;
 %N_max_min=SR2_max_min;
 %N_min=SR2_min;
 %N_max_min=AQI2_max_min;

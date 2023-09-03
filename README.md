@@ -53,13 +53,8 @@ tsvd.m: the t-SVD decomposition
 
 3.SR: Our traffic statistics telemetry data (company name withheld to comply with anonymity rules). The original data is OriginalData_SR.mat. The input tensor processed by data_preprocess.m is InputTensor_SR_T=50_W=15.mat.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 4.CAIDA：traffic traces collected from CAIDA‘s equinix-nyc monitor on a commercial blackbone link. The CAIDA UCSD Anonymized Internet Traces - <dates used>
 https://www.caida.org/catalog/datasets/passive_dataset
 
 5.MAWI：traffic traces at the transit link of WIDE to the upstream ISP are collected at the samplepoint-F， in operation since 2006/08/24.  [Traffic Trace Info (wide.ad.jp)](http://mawi.wide.ad.jp/mawi/samplepoint-F/2006/200608241400.html)
-=======
->>>>>>> 0196704cf5961386053b79cf5461c766fcd48e75
-=======
->>>>>>> 0196704cf5961386053b79cf5461c766fcd48e75
+

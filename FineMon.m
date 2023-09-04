@@ -5,12 +5,9 @@ I=size(M,1);
 J=size(M,2);
 K=size(M,3);
 % window size after ST,  W_size = WT-T+1
-
-W_size = 701;
 % \eta in residual(.)
 % theta=2.5e-3;%MMS
 % yita=4e-29;
-
 % theta=2.4e-4;%SR
 % yita=6e-28;
 % theta=9e-4;%AQI
@@ -55,7 +52,6 @@ orig_data_M=CAIDA(15*50+1:(J-W_size+15)*50,:);%CAIDA
 % calculate all data's NMAE,Cos for each metric
 [p_NMAEs,p_COSes]=getPerformanceNC_orign(orig_data_M, RM_orign);
 
-          
 % calculate NMSE of un-sampled data
 unOmega=ones(I,J,K)-omega;
 p_unOmega_NMAEs=zeros(1,K);

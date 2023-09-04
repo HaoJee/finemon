@@ -32,6 +32,7 @@ for i=1:5
     AQI2(:,i)=(AQI2(:,i)-AQI2_min(1,i))/AQI2_max_min(1,i);
 end
 
+<<<<<<< HEAD
 %% normalize for each metric
 % for MAWI: x = (x-min)/(max-min)
 % input: MAWI, is a matrix time × metric
@@ -76,5 +77,25 @@ for i=T*W+1:T:size(CAIDA,1)
 %     M(:,index,:) = AQI2(i:i+T-1,:);
 %     M(:,index,:) = MAWI2(i:i+T-1,:);
     M(:,index,:) = CAIDA2(i:i+T-1,:);
+=======
+%% creat input tenor by a parameter T(cycle length)
+% T: cycle length; W: window size
+% performing only self-embedding transform for the first W slices
+T=70;
+index=1;
+W=20;
+index=1;
+for i=1:(T*W-T+1)
+%     M_mdt(:,index,:) = MMS2(i:i+T-1,:);
+%     M_mdt(:,index,:) = SR2(i:i+T-1,:);
+    M_mdt(:,index,:) = AQI2(i:i+T-1,:);
+    index = index+1;
+end
+W_size=i
+for i=T*W+1:T:5950
+%     M_mdt(:,index,:)=MMS2(i:i+T-1,:);
+%     M_mdt(:,index,:) = SR2(i:i+T-1,:);
+    M_mdt(:,index,:) = AQI2(i:i+T-1,:);
+>>>>>>> 0196704cf5961386053b79cf5461c766fcd48e75
     index=index+1;
 end

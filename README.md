@@ -49,9 +49,9 @@ tsvd.m: the t-SVD decomposition
 
 1.MMS: A server performance dataset, the original link is [QAZASDEDC/TopoMAD: A Spatio-Temporal Deep Learning Approach for Unsupervised Anomaly Detection in Cloud Systems (TNNLS) (github.com)](https://github.com/QAZASDEDC/TopoMAD).   The original data is OriginalData_MMS_mat. The input tensor processed by data_preprocess.m is InputTensor_MMS_T=40_W=8.mat.
 
-2.AQI:  the original link is https://www.microsoft.com/en-us/research/uploads/prod/2016/02/Data-1.zip  The original data is OriginalData_AQI(precompletion_by_LRTC)_mat. The input tensor processed by data_preprocess.m is InputTensor_AQI_T=50_W=15.mat.
+2.AQI(removed in paper):  the original link is https://www.microsoft.com/en-us/research/uploads/prod/2016/02/Data-1.zip  The original data is OriginalData_AQI(precompletion_by_LRTC)_mat. The input tensor processed by data_preprocess.m is InputTensor_AQI_T=50_W=15.mat.
 
-3.SR: Our traffic statistics telemetry data (company name withheld to comply with anonymity rules). The original data is OriginalData_SR.mat. The input tensor processed by data_preprocess.m is InputTensor_SR_T=50_W=15.mat.
+3.SR(removed in paper): Our traffic statistics telemetry data (company name withheld to comply with anonymity rules). The original data is OriginalData_SR.mat. The input tensor processed by data_preprocess.m is InputTensor_SR_T=50_W=15.mat.
 
 4.CAIDA：traffic traces collected from CAIDA‘s equinix-nyc monitor on a commercial blackbone link. The CAIDA UCSD Anonymized Internet Traces - <dates used>
 https://www.caida.org/catalog/datasets/passive_dataset

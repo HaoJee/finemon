@@ -20,7 +20,7 @@ function [R,com,h_incoms,times,times_fullfor]=subroutine_delayRecovery_all(M,R,U
         end
         omega_slice_index=find(omega(:,jj,1)==1);
         isSame_forall=j>1 && isSameOmega;
-        isSame_forall=0;
+        %isSame_forall=0;
         if ~isSame_forall
             U_all_omega_t=U_union_t(omega_slice_index,:,:);
             pesudoinverse_U_all_omega_t=tpinv(U_all_omega_t);
@@ -30,7 +30,9 @@ function [R,com,h_incoms,times,times_fullfor]=subroutine_delayRecovery_all(M,R,U
         Mj_omega_t=[];
         Mj_omega_t(:,1,:)=M(omega_slice_index,jj,:);
         
-        estimator=(norm(tensor(Mj_omega_t-tprod(Pu_incom_omega,Mj_omega_t)))^2)/(norm(tensor(Mj_omega_t))^2);
+%         estimator=(norm(tensor(Mj_omega_t-tprod(Pu_incom_omega,Mj_omega_t)))^2)/(norm(tensor(Mj_omega_t))^2);
+        estimator_err = Mj_omega_t-tprod(Pu_incom_omega,Mj_omega_t);
+        estimator=(norm(estimator_err(:,:),'fro')^2)/(norm(Mj_omega_t(:,:),'fro')^2);
         if estimator<=yita
             if ~isSame_forall
                 Pu_Uall_t=tprod(U_union_t,pesudoinverse_U_all_omega_t);

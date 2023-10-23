@@ -20,13 +20,13 @@ function Xt = tran(X)
 
 %[n1,n2,n3] = size(X);
 n = size(X);
-n1 = n(1)
-n2=n(2)
-n3=n(3)
+n1 = n(1);
+n2=n(2);
+n3=n(3);
 Xt = zeros(n2,n1,n3);
-X1=double(X(:,:,1))
+X1=double(X(:,:,1));
 Xt(:,:,1) = X1';
 for i = 2 : n3
-    Xtt=double(X(:,:,n3-i+2))
+    Xtt=double(X(:,:,n3-i+2));
     Xt(:,:,i) = Xtt';
 end

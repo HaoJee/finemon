@@ -19,18 +19,17 @@ function pinvX = tpinv(X)
 %
 
 n = size(X);
-n1 = n(1)
-n2=n(2)
+n1 = n(1);
+n2=n(2);
 if length(n)==3
-    n3=n(3)
+    n3=n(3);
 else
-    n3=1
+    n3=1;
 end
 
 X = fft(X,[],3);
 pinvX = zeros(n2,n1,n3);
 for i=1:n3
-    a=X(:,:,i)
     pinvX(:,:,i)=pinv(X(:,:,i));
 end
 pinvX = ifft(pinvX,[],3);

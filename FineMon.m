@@ -1,27 +1,43 @@
 
 %parameters:
 % tensor size: I = time dimension, J = cycle dimension, K = metric dimension
+% M = gpuArray(M);
 I=size(M,1);
 J=size(M,2);
 K=size(M,3);
 % window size after ST,  W_size = WT-T+1
+W_size=201;
 % \eta in residual(.)
-% theta=2.5e-3;%MMS
+% theta=2.2e-3;%MMS
 % yita=4e-29;
 % theta=2.4e-4;%SR
 % yita=6e-28;
 % theta=9e-4;%AQI
 % yita=4e-29;  
-theta=1.7e-3;%CAIDA
-yita=4e-29;
+% theta=2e-3;%CAIDA
+% yita=8e-29;
+theta=2.5e-3;%MAWI
+yita=6e-29;
+% theta=2e-4;%SMD
+% yita=4e-29;
 % \beta in delay-recovery strategy in Section 4.3
-beta=2;
+beta=3;
 % Whether to enable capturing large tubes by refining the frequency, the default is off because the refined frequency leads to an increase in the sample ratio
-isRefine = 0;
+isRefine = 1;
+% MMS:
+% epsilon_delta = 2.8;
+% epsilon_gamma = 0.3;
+% CAIDA:
+% epsilon_delta = 2.8;
+% epsilon_gamma = 0.2;
+% MAWI
+epsilon_delta = 6;
+epsilon_gamma = 0.2;
 
 % perform the finemon for real dataset M
-[R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine);
-            
+% [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);
+% 输出ers 估计的秩
+[R,omega,h_incoms,estimators,rs,ers, ms,com, pareto_oemga_large,pareto_oemga_low] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);            
 Rm=[];
 for j=W_size+1:J
      Rm(size(Rm,1)+1:size(Rm,1)+I,:)=R(:,j,:);
@@ -31,23 +47,27 @@ end
 % inverse normalization
 % N_max_min=MMS2_max_min;
 % N_min=MMS2_min;
-%N_max_min=SR2_max_min;
-%N_min=SR2_min;
-%N_max_min=AQI2_max_min;
-%N_min=AQI2_min;
-% N_max_min=MAWI2_max_min;
-% N_min=MAWI2_min;
-N_max_min=CAIDA2_max_min;
-N_min=CAIDA2_min;
+% N_max_min=KPIs2_max_min;
+% N_min=KPIs2_min;
+% N_max_min=Mone2_max_min;
+% N_min=Mone2_min;
+N_max_min=MAWI2_max_min;
+N_min=MAWI2_min;
+% N_max_min=CAIDA2_max_min;
+% N_min=CAIDA2_min;
+% N_max_min=SMD2_max_min;
+% N_min=SMD2_min;
 RM_orign=[];
 for k=1:K
       RM_orign(:,k) = Rm(:,k)*N_max_min(k)+N_min(k);
 end
 % orig_data_M=MMS(8*40+1:(J-W_size+8)*40,:);%MMS
-% orig_data_M=SR(15*50+1:(J-W_size+15)*50,:);%SR
-% orig_data_M=AQI(15*50+1:(J-W_size+15)*50,:);%AQI
-% orig_data_M=MAWI(15*50+1:(J-W_size+15)*50,:);%MAWI
-orig_data_M=CAIDA(15*50+1:(J-W_size+15)*50,:);%CAIDA
+% orig_data_M=MMS(3*40+1:(J-W_size+3)*40,:);%MMS
+% orig_data_M=KPIs(15*50+1:(J-W_size+15)*50,:);%SR
+% orig_data_M=Mone(15*50+1:(J-W_size+15)*50,:);%AQI
+orig_data_M=MAWI(5*50+1:(J-W_size+5)*50,:);%MAWI
+% orig_data_M=CAIDA(3*100+1:(J-W_size+3)*100,:);%CAIDA
+% orig_data_M=SMD(15*50+1:(J-W_size+15)*50,:);%SMD
 
 % calculate all data's NMAE,Cos for each metric
 [p_NMAEs,p_COSes]=getPerformanceNC_orign(orig_data_M, RM_orign);
@@ -87,7 +107,8 @@ sampleRatio_sw=samples_sw/(I*(J-W_size)*K);
 %----------- R: recovered data
 %----------- omega: sampling positions
 %----------- pareto_oemga: sampling positions resulted by refined frequency
-function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,I,J,K,theta,yita,beta, isRefine)
+% function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,I,J,K,theta,yita,beta, isRefine,  epsilon_delta, epsilon_gamma)
+function [R,omega,h_incoms,estimators,rs,ers,ms,com, pareto_oemga_large,pareto_oemga_low]=finemon(M,W_size,I,J,K,theta,yita,beta, isRefine,  epsilon_delta, epsilon_gamma)
     %initial variables
     W=[]; % window containing the slice index
     U_W_t=[]; % subspace
@@ -96,10 +117,9 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
     U_W_index=[];
     U_W_t_indep_index=[];
     rank_W=0; % rank
-    u1=1;
 
-    R=[]; % recovered tensor
-    omega=[]; % sampling positions at input tensor M
+    R = gpuArray(zeros(I,J,K)); % recovered tensor
+    omega=zeros(I,J,K); % sampling positions at input tensor M
     
     Pu=[];
     pesudoinverse_U_W_omega_t=[];
@@ -114,8 +134,11 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
     pareto_alpha = zeros(K,1); % pareto parameter alpha_m
     pareto_L = 0; % extra number of samples in (t,t+inv)
     pareto_oemga=zeros(I,J,K); % the sample positions taken by the refined frequency
+    pareto_oemga_large=zeros(I,J,K);
+    pareto_oemga_low=zeros(I,J,K);
 
     rs=zeros(1,J);
+    ers=zeros(1,J);
     ms=zeros(1,J);
     times=zeros(1,J);% time cost for each slice (from sampling to recovery)
     times_update_rs=zeros(1,J);
@@ -152,9 +175,11 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
             else
                 st_train2=tic;
                 if ~isSame_UWTindep
-                    Pu_train2=tprod(U_W_t_indep,tpinv(U_W_t_indep))
+                    Pu_train2=tprod(U_W_t_indep,tpinv(U_W_t_indep));
                 end
-                estimator=(norm(tensor(Mi-tprod(Pu_train2,Mi)))^2)/(norm(tensor(Mi))^2);
+                estimator_err = Mi-tprod(Pu_train2,Mi);
+                estimator=(norm(estimator_err(:,:),'fro')^2)/(norm(Mi(:,:), 'fro')^2);
+%                 estimator=(norm(tensor(Mi-tprod(Pu_train2,Mi)))^2)/(norm(tensor(Mi))^2);
                 times_train2(1,i)=toc(st_train2);
             end
             normalize=norm(Mi(:));
@@ -182,6 +207,7 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
             time=toc(st_train);
             times(1,i)=time;
             rs(1,i)=rank_W;
+            ers(1,i)=rank_W;
         else
         
         %***** real-time monitoring phase: slide-window moving, TFA+ESTC
@@ -190,6 +216,7 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
             [W,U_W_t,U_W_index,ischange_U_W,rank_W] = subroutine_sw_removeFromW(W,U_W_t,U_W_index,count_map,ischange_U_W,rank_W,yita,i);
             times_r=toc(st_slideW);
             times_update_rs(1,i)=times_r;
+            ers(1,i)=rank_W;
 
             if incomplete_spaceSlice>0
                 st_full1=tic;
@@ -225,7 +252,7 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
                     [R,com,h_incoms,times,times_fullfor] = subroutine_delayRecovery_all(M,R,U_union_t,omega,h_incoms,com,i,incomplete_spaceSlice,times,times_fullfor,yita);
                     incomplete_spaceSlice=0;
 
-                    if length(h_incoms)==0
+                    if isempty(h_incoms)
                         U_union_t=[];
                     end
                 else
@@ -248,42 +275,11 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
                 omega_slice_index=find(omega_column==1);
                 % refine the frequency when a large tube is detected
                 if isRefine==1 && m~=I
-                    for j=1:length(omega_slice_index)
-                        if omega_slice_index(j)<I
-                            omega(omega_slice_index(j),i,:)=1;
-                            for k = 1:K
-                                MWk = M(:,W,k);
-                                omegaWk = omega(:,W,k);
-                                mWk = MWk(:);
-                                oWk = omegaWk(:);
-                                oWk_IDX = find(oWk == 1);
-                                pareto_delta(k)=3*mean(mWk(oWk_IDX));
-                                mWk_oWk = mWk(oWk_IDX);
-                                pareto_x_min(k)=min(mWk_oWk(mWk_oWk>0));
-                                pareto_alpha(k) = length(oWk_IDX)/(sum( log( mWk(oWk_IDX)/pareto_x_min(k) ) ));
-                            end
-                            m_ji = M(omega_slice_index(j),i,:);
-                            is_large = m_ji > pareto_delta;
-                            if max(is_large)==1
-                                % it is a large tube, we calculete L by the equation (16) in Section 4.2
-                                min_pareto_delta = min(pareto_delta);
-                                pareto_x_min_delta = pareto_x_min/min_pareto_delta;
-                                pareto_x_min_delta_alpha = power(pareto_x_min_delta,pareto_alpha);
-                                L =  floor( min(I-omega_slice_index(j), (ceil(I/m)-1))*max(pareto_x_min_delta_alpha) );
-    
-                                % sampling extra L tubes in interval (omega_slice_index(j), omega_slice_index(j+1) or I)
-                                Ll = min(I-omega_slice_index(j), (ceil(I/m)-1));
-                                if Ll<L
-                                    L=Ll;
-                                end
-                                omega_column_L = Get_Array_equalInterval(Ll,L);
-                                omega_column( omega_slice_index(j)+1 : omega_slice_index(j)+Ll ) = omega_column_L;
-                                omega( omega_slice_index(j) + find(omega_column_L==1), i, :) = 1;
-                                pareto_oemga(omega_slice_index(j)+find(omega_column_L==1),i,:) = 1;
-                            end
-                        end
-                    end
+%                     [omega_column, pareto_oemga, L] = refineSampling(omega_slice_index,omega_column, omega, pareto_oemga, M, i, I,K, W,m, epsilon_delta, epsilon_gamma);
+                    [omega_column, pareto_oemga_large,pareto_oemga_low, ~] = refineSampling(omega_slice_index,omega_column, omega, pareto_oemga_large,pareto_oemga_low, M, i, I,K, W,m, epsilon_delta, epsilon_gamma);
+                
                 end
+                omega_slice=zeros(I,K);
                 for j=1:K
                     omega_slice(:,j)=omega_column;
                 end
@@ -339,8 +335,9 @@ function [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga]=finemon(M,W_size,
                         % ridge regression, \lambda = 0.01
                         U_W_omega=U_W_t(omega_slice_index,:,:);
                         ridge = tprod(tran(U_W_omega),U_W_omega);
-                        ridge_eye = 0.001*teye(size(ridge,1), size(ridge,3));
-                        pesudoinverse_U_W_omega_t=tprod(tinv(ridge-ridge_eye),tran(U_W_omega)); 
+                        ridge_eye = 0.0000001*teye(size(ridge,1), size(ridge,3));
+%                         pesudoinverse_U_W_omega_t=tprod(tinv(ridge-ridge_eye),tran(U_W_omega));
+                        pesudoinverse_U_W_omega_t=tpinv(U_W_omega);
 
                         Pu=tprod(U_W_t,pesudoinverse_U_W_omega_t);
                         ischange_U_W=1;

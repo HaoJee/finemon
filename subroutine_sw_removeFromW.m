@@ -7,7 +7,7 @@ function [W,U_W_t,U_W_index,ischange_U_W,rank_W]=subroutine_sw_removeFromW(W,U_W
     if ismember(oldest_slice_index,U_W_index)
         if isKey(count_map,oldest_slice_index)
             count=count_map(oldest_slice_index);
-            U_W_remove=[];
+        
             if size(U_W_t,2)>count
                 U_W_remove=U_W_t(:,1:count,:);
                 U_W_t=U_W_t(:,count+1:size(U_W_t,2),:);

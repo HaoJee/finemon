@@ -15,9 +15,9 @@ function [estimator,pesudoinverse_U_W_omega_t,Pu_omega,isSame_sample,Optimizatio
             end
         end
         isSame_sample=(~ischange_U_W) && isSameOmega;
-        isSame_sample=0;
+        %isSame_sample=0;
         if i==W_size+1 || ~isSame_sample
-            if length(omega_slice_index)>0
+            if ~isempty(omega_slice_index)
                 U_W_omega=U_W(omega_slice_index,:,:);
                 pesudoinverse_U_W_omega_t=tpinv(U_W_omega);
                 Pu_omega=tprod(U_W_omega,pesudoinverse_U_W_omega_t);
@@ -26,7 +26,7 @@ function [estimator,pesudoinverse_U_W_omega_t,Pu_omega,isSame_sample,Optimizatio
             OptimizationIDX(1,i)=OptimizationIDX(1,i)+1;
         end
         proRes=[];
-        if length(omega_slice_index)>0
+        if ~isempty(omega_slice_index)
             Mi_omega_1=Mi_omega(omega_slice_index,:,:);
             proRes(:,:)=tprod(Pu_omega,Mi_omega_1);
             estimator=(norm(Mi_omega_1(:,:)-proRes,'fro')^2)/(norm(Mi_omega_1(:,:),'fro')^2);

@@ -13,7 +13,7 @@ What FineMon can do？
 
 The direct results of FineMon are illustrated as follows
 
-![revision1-Validation of Outlier Capturing](E:\workplace\matlab\multi-metric\current\FineMon_upload\finemon\revision1_Validation_of_Outlier_Capturing.png)
+![revision1_Validation_of_Outlier_Capturing](revision1_Validation_of_Outlier_Capturing.png)
 
 The code of FineMon is the MATLAB version.  The coding process is shown below figure:
 

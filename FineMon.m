@@ -8,35 +8,32 @@ K=size(M,3);
 % window size after ST,  W_size = WT-T+1
 W_size=201;
 % \eta in residual(.)
-% theta=2.2e-3;%MMS
-% yita=4e-29;
+ theta=2.2e-3;%MMS
+ yita=4e-29;
 % theta=2.4e-4;%SR
 % yita=6e-28;
 % theta=9e-4;%AQI
 % yita=4e-29;  
 % theta=2e-3;%CAIDA
 % yita=8e-29;
-theta=2.5e-3;%MAWI
-yita=6e-29;
-% theta=2e-4;%SMD
-% yita=4e-29;
+%theta=2.5e-3;%MAWI
+%yita=6e-29;
 % \beta in delay-recovery strategy in Section 4.3
-beta=3;
+beta=2;
 % Whether to enable capturing large tubes by refining the frequency, the default is off because the refined frequency leads to an increase in the sample ratio
 isRefine = 1;
 % MMS:
-% epsilon_delta = 2.8;
-% epsilon_gamma = 0.3;
+ epsilon_delta = 2.8;
+ epsilon_gamma = 0.3;
 % CAIDA:
 % epsilon_delta = 2.8;
 % epsilon_gamma = 0.2;
 % MAWI
-epsilon_delta = 6;
-epsilon_gamma = 0.2;
+% epsilon_delta = 6;
+% epsilon_gamma = 0.2;
 
 % perform the finemon for real dataset M
 % [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);
-% 输出ers 估计的秩
 [R,omega,h_incoms,estimators,rs,ers, ms,com, pareto_oemga_large,pareto_oemga_low] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);            
 Rm=[];
 for j=W_size+1:J
@@ -61,11 +58,11 @@ RM_orign=[];
 for k=1:K
       RM_orign(:,k) = Rm(:,k)*N_max_min(k)+N_min(k);
 end
-% orig_data_M=MMS(8*40+1:(J-W_size+8)*40,:);%MMS
+ orig_data_M=MMS(8*40+1:(J-W_size+8)*40,:);%MMS
 % orig_data_M=MMS(3*40+1:(J-W_size+3)*40,:);%MMS
 % orig_data_M=KPIs(15*50+1:(J-W_size+15)*50,:);%SR
 % orig_data_M=Mone(15*50+1:(J-W_size+15)*50,:);%AQI
-orig_data_M=MAWI(5*50+1:(J-W_size+5)*50,:);%MAWI
+% orig_data_M=MAWI(5*50+1:(J-W_size+5)*50,:);%MAWI
 % orig_data_M=CAIDA(3*100+1:(J-W_size+3)*100,:);%CAIDA
 % orig_data_M=SMD(15*50+1:(J-W_size+15)*50,:);%SMD
 

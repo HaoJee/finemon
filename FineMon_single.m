@@ -1,5 +1,4 @@
 %  Mulit-metric monitor by treating each metric independently: sample by max frequency, recovery by MC 
-% 初始阶段的秩是张量秩
 %parameters:
 % tensor size: I = time dimension, J = cycle dimension, K = metric dimension
 I=size(M,1);
@@ -36,7 +35,6 @@ epsilon_gamma = 0.2;
 
 % perform the finemon for real dataset M
 % [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);
-% 输出rss，每个指标的秩
 [R,omega,h_incoms,estimators,rs,rss,ms,com, pareto_oemga_large,pareto_oemga_low] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);            
 Rm=[];
 for j=W_size+1:J

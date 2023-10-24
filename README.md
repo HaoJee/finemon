@@ -1,9 +1,21 @@
 # FineMon
 ### Introduction：
 
-This is a description of our monitoring scheme-FineMon. The code of FineMon is the MATLAB version. 
+This is a description of our monitoring scheme-FineMon. 
 
-The coding process is shown below figure:
+What FineMon can do？
+
+​	-FineMon can monitor accurately fined-grained multi-metric data with low overhead since FineMon provides the adaptive frequency adjustment method. FineMon provides a theoretical study of the effect of the amount of noise on frequency.
+
+​	-FineMon can capture the various extremes, such as spikes and dips, according to the data distribution.
+
+​	-FineMon can recover missing data with cyclicity even though data hasn't inherent cyclicity, and FineMon solves the limited accuracy of traditional subspace tensor completion in network telemetry by exploiting fine temporal features (enhanced subspace).
+
+The direct results of FineMon are illustrated as follows
+
+![revision1-Validation of Outlier Capturing](E:\workplace\matlab\multi-metric\current\FineMon_upload\finemon\revision1_Validation_of_Outlier_Capturing.png)
+
+The code of FineMon is the MATLAB version.  The coding process is shown below figure:
 
 ![finemon_process](finemon_process.png)
 
@@ -25,9 +37,9 @@ We introduce each code file as follows:
 
 8.subroutine_delayRecovery_all.m: Perform the delay-recovery strategy for all previous incompleted slices.
 
+9.refineSampling.m: Perform a refined sampling process corresponding to line 8 and 19  in Algorithm 1.
 
-
-9.library function:
+10.library function:
 
 teye.m:  an identity tensor
 
@@ -41,17 +53,13 @@ tran.m: the transpose of tensor
 
 tsvd.m: the t-SVD decomposition
 
-
-
-
-
 ### Dataset:
 
 1.MMS: A server performance dataset, the original link is [QAZASDEDC/TopoMAD: A Spatio-Temporal Deep Learning Approach for Unsupervised Anomaly Detection in Cloud Systems (TNNLS) (github.com)](https://github.com/QAZASDEDC/TopoMAD).   The original data is OriginalData_MMS_mat. The input tensor processed by data_preprocess.m is InputTensor_MMS_T=40_W=8.mat.
 
-2.AQI:  the original link is https://www.microsoft.com/en-us/research/uploads/prod/2016/02/Data-1.zip  The original data is OriginalData_AQI(precompletion_by_LRTC)_mat. The input tensor processed by data_preprocess.m is InputTensor_AQI_T=50_W=15.mat.
+2.AQI (removed in paper):  the original link is https://www.microsoft.com/en-us/research/uploads/prod/2016/02/Data-1.zip  The original data is OriginalData_AQI(precompletion_by_LRTC)_mat. The input tensor processed by data_preprocess.m is InputTensor_AQI_T=50_W=15.mat.
 
-3.SR: Our traffic statistics telemetry data (company name withheld to comply with anonymity rules). The original data is OriginalData_SR.mat. The input tensor processed by data_preprocess.m is InputTensor_SR_T=50_W=15.mat.
+3.SR (removed in paper): Our traffic statistics telemetry data (company name withheld to comply with anonymity rules). The original data is OriginalData_SR.mat. The input tensor processed by data_preprocess.m is InputTensor_SR_T=50_W=15.mat.
 
 4.CAIDA：traffic traces collected from CAIDA‘s equinix-nyc monitor on a commercial blackbone link. The CAIDA UCSD Anonymized Internet Traces - <dates used>
 https://www.caida.org/catalog/datasets/passive_dataset

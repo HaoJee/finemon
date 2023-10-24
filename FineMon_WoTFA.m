@@ -22,7 +22,6 @@ yita=6e-29;
 % yita=4e-29;
 % \beta in delay-recovery strategy in Section 4.3
 beta=3;
-%指定频率p
 p=0.5;
 % Whether to enable capturing large tubes by refining the frequency, the default is off because the refined frequency leads to an increase in the sample ratio
 isRefine = 0;
@@ -38,7 +37,6 @@ epsilon_gamma = 0.2;
 
 % perform the finemon for real dataset M
 % [R,omega,h_incoms,estimators,rs,ms,com, pareto_oemga] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma);
-% 输出ers 估计的秩
 [R,omega,h_incoms,estimators,rs,ers, ms,com, pareto_oemga_large,pareto_oemga_low] = finemon(M,W_size,I,J,K,theta,yita,beta, isRefine, epsilon_delta, epsilon_gamma,p);            
 % R = gether(R);
 Rm=[];
